@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Penyimpanan Sekunder - Interactive Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1428 0%, #1a1f3a 50%, #0f2847 100%);
+            color: #e0e6ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 200, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 200, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(0, 255, 150, 0.05) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float linear infinite;
+            box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(0, 200, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00c8ff, transparent);
+            animation: scanline 2s infinite;
+        }
+
+        @keyframes scanline {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #00c8ff, #00ff88, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: glowText 2s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 200, 255, 0.5);
+        }
+
+        @keyframes glowText {
+            0%, 100% { text-shadow: 0 0 20px rgba(0, 200, 255, 0.5); }
+            50% { text-shadow: 0 0 40px rgba(0, 200, 255, 0.8); }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: rgba(0, 200, 255, 0.8);
+            margin-top: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(20, 30, 50, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 200, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(0, 200, 255, 0.1);
+            border: 1px solid rgba(0, 200, 255, 0.5);
+            color: #00c8ff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 200, 255, 0.2);
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        .nav-btn:hover::before {
+            left: 0;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
+        }
+
+        .nav-btn.active {
+            background: rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.8);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Card Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 200, 255, 0.2) 0%, transparent 70%);
+            transition: all 0.5s;
+        }
+
+        .card:hover::before {
+            top: -30%;
+            right: -30%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(0, 200, 255, 0.8);
+            box-shadow: 0 20px 60px rgba(0, 200, 255, 0.3), inset 0 0 30px rgba(0, 200, 255, 0.1);
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card:nth-child(2) .card-icon { animation-delay: 0.2s; }
+        .card:nth-child(3) .card-icon { animation-delay: 0.4s; }
+        .card:nth-child(4) .card-icon { animation-delay: 0.6s; }
+        .card:nth-child(5) .card-icon { animation-delay: 0.8s; }
+        .card:nth-child(6) .card-icon { animation-delay: 1s; }
+        .card:nth-child(7) .card-icon { animation-delay: 1.2s; }
+        .card:nth-child(8) .card-icon { animation-delay: 1.4s; }
+        .card:nth-child(9) .card-icon { animation-delay: 1.6s; }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #00ff88;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: rgba(0, 200, 255, 0.2);
+            color: #00c8ff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .card-text {
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: rgba(224, 230, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        .card-list {
+            list-style: none;
+            font-size: 0.9em;
+            line-height: 1.8;
+        }
+
+        .card-list li {
+            color: rgba(224, 230, 255, 0.8);
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .card-list li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #00c8ff;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Conclusion Section */
+        .conclusion-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(0, 200, 255, 0.4);
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .conclusion-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 150, 0.1) 50%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .conclusion-title {
+            font-size: 2em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .conclusion-text {
+            font-size: 1em;
+            line-height: 1.8;
+            color: rgba(224, 230, 255, 0.9);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(10, 20, 40, 0.9);
+            border-top: 1px solid rgba(0, 200, 255, 0.2);
+            color: rgba(0, 200, 255, 0.7);
+            margin-top: 60px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.5), transparent);
+        }
+
+        /* Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: rgba(10, 20, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 200, 255, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #00c8ff;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+            color: #ff00ff;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section-title {
+            color: #00c8ff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .modal-section-text {
+            color: rgba(224, 230, 255, 0.9);
+            line-height: 1.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                padding: 25px;
+                max-width: 90%;
+            }
+
+            .conclusion-section {
+                padding: 25px;
+            }
+        }
+
+        /* Scroll Bar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 200, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 200, 255, 0.5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 200, 255, 0.8);
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(0, 200, 255, 0.1);
+            border: 1px solid rgba(0, 200, 255, 0.4);
+            color: #00c8ff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 200, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+        }
+
+        .filter-btn:hover {
+            background: rgba(0, 200, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particlesContainer"></div>
+
+    <header>
+        <h1>💾 MEDIA PENYIMPANAN SEKUNDER</h1>
+        <p class="subtitle">Teknologi Penyimpanan Data Modern & Masa Depan</p>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" data-filter="all">Semua</button>
+        <button class="nav-btn" data-filter="fast">Cepat</button>
+        <button class="nav-btn" data-filter="capacity">Kapasitas Besar</button>
+        <button class="nav-btn" data-filter="portable">Portabel</button>
+    </nav>
+
+    <div class="container">
+        <div class="cards-grid" id="cardsContainer"></div>
+
+        <div class="conclusion-section">
+            <h2 class="conclusion-title">✅ Kesimpulan Umum</h2>
+            <p class="conclusion-text">
+                Media penyimpanan sekunder memiliki peran penting dalam sistem komputer untuk menyimpan data secara permanen. 
+                Setiap jenis memiliki karakteristik dan keunggulan tersendiri — <strong>HDD dan External Hard Disk</strong> unggul dalam kapasitas besar, 
+                <strong>SSD dan NVMe</strong> dalam kecepatan tinggi, <strong>Flashdisk dan Memory Card</strong> dalam portabilitas, 
+                <strong>Optical Disk dan Magnetic Tape</strong> dalam fungsi arsip, serta <strong>Cloud Storage</strong> dalam kemudahan akses daring.
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Media Penyimpanan - Panduan Teknologi Komputer | Dibuat dengan 💙 untuk Pelajar Teknik</p>
+    </footer>
+
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const storageDevices = [
+            {
+                id: 'hdd',
+                icon: '💿',
+                name: 'Hard Disk Drive (HDD)',
+                category: ['capacity'],
+                pengertian: 'Hard Disk Drive (HDD) merupakan media penyimpanan berbasis magnetik yang berfungsi untuk menyimpan data secara permanen pada komputer maupun laptop. Data disimpan pada piringan logam yang berputar dengan kecepatan tinggi, kemudian dibaca oleh kepala pembaca (head) menggunakan prinsip kerja magnetik.',
+                fungsi: [
+                    'Menyimpan sistem operasi, aplikasi, serta berkas pengguna',
+                    'Menjadi media penyimpanan utama komputer',
+                    'Berfungsi sebagai tempat cadangan (backup) data'
+                ],
+                kelebihan: 'Memiliki kapasitas besar dengan harga yang relatif terjangkau',
+                kekurangan: 'Kecepatan akses data tergolong lambat dan mudah rusak apabila terguncang',
+                kesimpulan: 'HDD masih banyak digunakan karena kapasitasnya yang besar serta harganya yang ekonomis, meskipun performanya kalah cepat dibandingkan dengan SSD.'
+            },
+            {
+                id: 'ssd',
+                icon: '⚡',
+                name: 'Solid State Drive (SSD)',
+                category: ['fast'],
+                pengertian: 'Solid State Drive (SSD) adalah media penyimpanan data berbasis chip memori flash yang tidak menggunakan piringan berputar. SSD menyimpan data dalam sel-sel memori elektronik, mirip dengan flashdisk namun memiliki performa yang jauh lebih tinggi.',
+                fungsi: [
+                    'Menyimpan sistem operasi dan program agar kinerja komputer lebih cepat',
+                    'Sebagai pengganti HDD pada perangkat modern'
+                ],
+                kelebihan: 'Kecepatan tinggi, tahan terhadap guncangan, serta hemat energi',
+                kekurangan: 'Harga relatif mahal dan kapasitas penyimpanan lebih kecil dibandingkan HDD',
+                kesimpulan: 'SSD menjadi pilihan utama bagi pengguna yang membutuhkan kecepatan tinggi dan efisiensi, terutama pada perangkat laptop maupun PC modern.'
+            },
+            {
+                id: 'nvme',
+                icon: '🚀',
+                name: 'NVMe (Non-Volatile Memory Express)',
+                category: ['fast'],
+                pengertian: 'NVMe merupakan pengembangan dari SSD yang menggunakan jalur PCI Express (PCIe). Teknologi ini memungkinkan kecepatan transfer data yang sangat tinggi, jauh melebihi SSD dengan antarmuka SATA.',
+                fungsi: [
+                    'Menyimpan dan mengakses data dengan kecepatan tinggi',
+                    'Cocok digunakan untuk kebutuhan gaming, desain grafis, serta server'
+                ],
+                kelebihan: 'Sangat cepat, responsif, dan efisien',
+                kekurangan: 'Harga lebih tinggi dan membutuhkan motherboard dengan slot NVMe',
+                kesimpulan: 'NVMe merupakan solusi terbaik bagi pengguna yang membutuhkan performa tinggi dan efisiensi waktu dalam pengolahan data berukuran besar.'
+            },
+            {
+                id: 'optical',
+                icon: '💿',
+                name: 'Optical Disk',
+                category: ['capacity'],
+                pengertian: 'Optical Disk adalah media penyimpanan yang menggunakan teknologi laser untuk membaca dan menulis data. Jenisnya meliputi CD, DVD, dan Blu-ray Disc.',
+                fungsi: [
+                    'Menyimpan data berupa film, musik, maupun arsip',
+                    'Digunakan sebagai media distribusi perangkat lunak'
+                ],
+                kelebihan: 'Harga murah dan dapat digunakan berulang (tipe RW)',
+                kekurangan: 'Kapasitas penyimpanan kecil dan mudah tergores',
+                kesimpulan: 'Walaupun penggunaannya mulai menurun, optical disk masih dimanfaatkan untuk keperluan distribusi serta penyimpanan jangka panjang.'
+            },
+            {
+                id: 'flashdrive',
+                icon: '🔌',
+                name: 'Flash Drive (USB Flashdisk)',
+                category: ['portable'],
+                pengertian: 'Flash Drive atau Flashdisk adalah perangkat penyimpanan portabel berbasis memori flash yang dihubungkan melalui port USB.',
+                fungsi: [
+                    'Memindahkan data antarperangkat komputer',
+                    'Menyimpan dokumen, musik, serta foto'
+                ],
+                kelebihan: 'Berukuran kecil, mudah dibawa, dan tidak memerlukan daya tambahan',
+                kekurangan: 'Rentan terhadap virus, mudah hilang, serta kapasitas terbatas',
+                kesimpulan: 'Flashdisk merupakan media penyimpanan yang praktis untuk memindahkan data dalam jumlah kecil hingga menengah.'
+            },
+            {
+                id: 'external',
+                icon: '🧱',
+                name: 'External Hard Disk',
+                category: ['capacity', 'portable'],
+                pengertian: 'External Hard Disk merupakan perangkat keras penyimpanan eksternal yang dihubungkan ke komputer melalui kabel USB. Umumnya digunakan untuk penyimpanan tambahan atau sebagai cadangan data.',
+                fungsi: [
+                    'Menyimpan data penting di luar perangkat utama',
+                    'Sebagai media backup untuk berkas berukuran besar'
+                ],
+                kelebihan: 'Kapasitas besar dan mudah dioperasikan',
+                kekurangan: 'Lebih lambat dibandingkan HDD internal dan mudah rusak apabila terjatuh',
+                kesimpulan: 'External Hard Disk menjadi pilihan ideal bagi pengguna yang memerlukan penyimpanan besar dan bersifat portabel.'
+            },
+            {
+                id: 'memorycard',
+                icon: '📱',
+                name: 'Memory Card (Kartu Memori)',
+                category: ['portable'],
+                pengertian: 'Memory Card adalah media penyimpanan berukuran kecil berbasis memori flash yang digunakan pada perangkat seperti kamera digital, ponsel pintar, dan drone.',
+                fungsi: [
+                    'Menyimpan data seperti foto, video, dan aplikasi',
+                    'Memperluas kapasitas penyimpanan pada perangkat'
+                ],
+                kelebihan: 'Ukuran kecil, ringan, serta mudah dipindahkan',
+                kekurangan: 'Mudah rusak apabila sering dicabut-pasang dan kapasitasnya terbatas',
+                kesimpulan: 'Kartu memori sangat berguna bagi perangkat portabel yang membutuhkan ruang penyimpanan tambahan dengan ukuran minimalis.'
+            },
+            {
+                id: 'magnetictape',
+                icon: '🧵',
+                name: 'Magnetic Tape',
+                category: ['capacity'],
+                pengertian: 'Magnetic Tape merupakan media penyimpanan data berbentuk pita magnetik yang digunakan untuk kebutuhan cadangan (backup) dan arsip data jangka panjang.',
+                fungsi: [
+                    'Menyimpan data cadangan dalam skala besar',
+                    'Digunakan oleh lembaga, bank, maupun perusahaan besar'
+                ],
+                kelebihan: 'Tahan lama dan ekonomis untuk penyimpanan berkapasitas besar',
+                kekurangan: 'Akses data lambat dan tidak praktis untuk penggunaan sehari-hari',
+                kesimpulan: 'Meskipun tergolong teknologi lama, magnetic tape masih digunakan dalam penyimpanan data berskala besar karena ketahanannya.'
+            },
+            {
+                id: 'cloud',
+                icon: '☁️',
+                name: 'Cloud Storage (Penyimpanan Awan)',
+                category: ['portable'],
+                pengertian: 'Cloud Storage adalah media penyimpanan daring (online) yang memungkinkan pengguna menyimpan data di server internet dan mengaksesnya dari berbagai perangkat. Contohnya antara lain Google Drive, Dropbox, dan OneDrive.',
+                fungsi: [
+                    'Menyimpan file secara online',
+                    'Memudahkan akses data dari berbagai perangkat',
+                    'Menjadi cadangan tambahan apabila penyimpanan fisik mengalami kerusakan'
+                ],
+                kelebihan: 'Akses mudah kapan saja dan tidak memerlukan perangkat tambahan',
+                kekurangan: 'Membutuhkan koneksi internet serta berpotensi menimbulkan risiko keamanan data',
+                kesimpulan: 'Cloud storage menjadi solusi modern yang efisien untuk menyimpan, mengelola, dan berbagi data secara fleksibel melalui jaringan internet.'
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particlesContainer');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 2 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Render cards
+        function renderCards(filter = 'all') {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            let filtered = storageDevices;
+            if (filter !== 'all') {
+                filtered = storageDevices.filter(device => device.category.includes(filter));
+            }
+
+            filtered.forEach(device => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-icon">${device.icon}</div>
+                    <h3 class="card-title">${device.name}</h3>
+                    <div class="card-content">
+                        <p class="section-label">📖 Pengertian</p>
+                        <p class="card-text">${device.pengertian}</p>
+                        <p class="section-label" style="margin-top: 10px;">✨ Fungsi Utama</p>
+                        <ul class="card-list">
+                            ${device.fungsi.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="nav-btn" style="margin-top: 15px; width: 100%;" onclick="openModal('${device.id}')">Lihat Detail Lengkap →</button>
+                `;
+                card.addEventListener('click', () => openModal(device.id));
+                container.appendChild(card);
+            });
+        }
+
+        // Open modal
+        function openModal(deviceId) {
+            const device = storageDevices.find(d => d.id === deviceId);
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 4em; margin-bottom: 10px;">${device.icon}</div>
+                </div>
+                <h2 class="modal-title">${device.name}</h2>
+                
+                <div class="modal-section">
+                    <div class="modal-section-title">📖 Pengertian</div>
+                    <div class="modal-section-text">${device.pengertian}</div>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">⚙️ Fungsi Utama</div>
+                    <ul class="card-list" style="margin-left: 15px;">
+                        ${device.fungsi.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">✅ Kelebihan</div>
+                    <div class="modal-section-text">✓ ${device.kelebihan}</div>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">❌ Kekurangan</div>
+                    <div class="modal-section-text">✗ ${device.kekurangan}</div>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">📌 Kesimpulan</div>
+                    <div class="modal-section-text">${device.kesimpulan}</div>
+                </div>
+            `;
+            
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') {
+                closeModal();
+            }
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderCards(currentFilter);
+            });
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            createParticles();
+            renderCards();
+        });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
